@@ -1,0 +1,779 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>김찬희 — 백엔드 개발자</title>
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    body { font-family: 'Pretendard', 'Apple SD Gothic Neo', sans-serif; background: #0a0a0a; color: #f0f0f0; }
+
+    .section-label {
+      position: absolute; top: 12px; left: 16px;
+      font-size: 10px; font-weight: 700; letter-spacing: 0.15em;
+      color: #888; text-transform: uppercase; font-family: monospace;
+    }
+
+    section { position: relative; width: 100%; }
+
+    /* ── nav ── */
+    #nav {
+      position: fixed; top: 0; left: 0; right: 0; z-index: 100;
+      height: 64px;
+      display: flex; align-items: center; justify-content: space-between;
+      padding: 0 48px;
+      border-bottom: 1px solid #222;
+      background: rgba(10,10,10,0.85);
+      backdrop-filter: blur(10px);
+    }
+    #nav .nav-logo { font-size: 18px; font-weight: 700; }
+    #nav .nav-links { display: flex; gap: 32px; font-size: 14px; color: #aaa; }
+    #nav .nav-links a { color: #aaa; text-decoration: none; cursor: pointer; }
+    #nav .nav-links a:hover { color: #f0f0f0; }
+    html { scroll-behavior: smooth; }
+    #nav .nav-cta {
+      padding: 8px 20px; border-radius: 6px;
+      background: #fff; color: #0a0a0a;
+      font-size: 14px; font-weight: 600; cursor: pointer;
+    }
+
+    /* ── hero ── */
+    #hero {
+      min-height: 100vh;
+      display: flex; flex-direction: column; justify-content: center;
+      padding: 120px 48px 80px;
+      border-bottom: 1px solid #1a1a1a;
+    }
+    #hero .hero-eyebrow { font-size: 12px; letter-spacing: 0.2em; color: #666; margin-bottom: 24px; }
+    #hero .hero-headline { font-size: clamp(36px, 6vw, 80px); font-weight: 800; line-height: 1.1; margin-bottom: 24px; }
+    #hero .hero-sub { font-size: 18px; color: #888; max-width: 540px; margin-bottom: 40px; line-height: 1.6; }
+    #hero .hero-cta-group { display: flex; gap: 16px; margin-bottom: 64px; }
+    #hero .hero-cta-primary {
+      padding: 14px 28px; border-radius: 8px;
+      background: #fff; color: #0a0a0a; font-weight: 700; font-size: 15px; cursor: pointer;
+    }
+    #hero .hero-cta-secondary {
+      padding: 14px 28px; border-radius: 8px;
+      border: 1px solid #333; color: #0a0a0a; font-size: 15px; cursor: pointer;
+    }
+    #hero .hero-logos { display: flex; align-items: center; gap: 32px; }
+    #hero .hero-logos span { font-size: 11px; color: #555; letter-spacing: 0.1em; }
+    #hero .logo-placeholder { width: 80px; height: 20px; border-radius: 3px; background: #1e1e1e; }
+
+    /* ── metrics ── */
+    #metrics {
+      padding: 80px 48px;
+      display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 2px;
+      border-bottom: 1px solid #1a1a1a;
+      background: #111;
+    }
+    #metrics .metric-card { padding: 48px 32px; background: #0f0f0f; }
+    #metrics .metric-number { font-size: 48px; font-weight: 800; margin-bottom: 8px; }
+    #metrics .metric-label { font-size: 13px; color: #666; line-height: 1.5; }
+
+    /* ── services ── */
+    #services {
+      padding: 100px 48px;
+      border-bottom: 1px solid #1a1a1a;
+    }
+    #services .section-title { font-size: 13px; letter-spacing: 0.2em; color: #555; margin-bottom: 48px; }
+    #services .services-grid {
+      display: grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); gap: 1px;
+      border: 1px solid #1e1e1e;
+    }
+    #services .service-card { padding: 40px 32px; border-right: 1px solid #1e1e1e; }
+    #services .service-icon { width: 32px; height: 32px; border-radius: 6px; margin-bottom: 20px; }
+    #services .service-name { font-size: 17px; font-weight: 700; margin-bottom: 12px; }
+    #services .service-desc { font-size: 14px; color: #666; line-height: 1.6; }
+
+    /* ── portfolio ── */
+    #portfolio {
+      padding: 100px 48px;
+      border-bottom: 1px solid #1a1a1a;
+    }
+    #portfolio .portfolio-header {
+      display: flex; justify-content: space-between; align-items: flex-end; margin-bottom: 48px;
+    }
+    #portfolio .portfolio-title { font-size: 36px; font-weight: 800; }
+    #portfolio .portfolio-filters { display: flex; gap: 12px; }
+    #portfolio .filter-chip {
+      padding: 6px 16px; border-radius: 100px;
+      border: 1px solid #2a2a2a; font-size: 13px; color: #666; cursor: pointer;
+    }
+    #portfolio .portfolio-grid {
+      display: grid; grid-template-columns: repeat(auto-fit, minmax(320px, 1fr)); gap: 2px;
+    }
+    #portfolio .case-card { background: #111; cursor: pointer; }
+    #portfolio .case-thumb { width: 100%; aspect-ratio: 16/9; background: #1a1a1a; display: flex; align-items: center; justify-content: center; overflow: hidden; }
+    #portfolio .case-body { padding: 28px; }
+    #portfolio .case-tag { font-size: 11px; letter-spacing: 0.15em; color: #555; margin-bottom: 10px; }
+    #portfolio .case-title { font-size: 18px; font-weight: 700; margin-bottom: 8px; }
+    #portfolio .case-result { font-size: 13px; color: #666; }
+
+    /* ── about ── */
+    #about {
+      padding: 100px 48px;
+      display: grid; grid-template-columns: 1fr 1fr; gap: 80px;
+      border-bottom: 1px solid #1a1a1a;
+    }
+    #about .about-left { display: flex; flex-direction: column; gap: 48px; }
+    #about .about-photo { aspect-ratio: 3/4; background: #1a1a1a; border-radius: 4px; display: flex; align-items: center; justify-content: center; overflow: hidden; }
+
+    /* 커리어 타임라인 */
+    #about .career-title { font-size: 12px; letter-spacing: 0.15em; color: #555; margin-bottom: 20px; }
+    #about .career-track { display: flex; flex-direction: column; gap: 0; }
+    #about .career-item { display: flex; gap: 16px; padding: 16px 0; border-bottom: 1px solid #1a1a1a; }
+    #about .career-year { font-size: 12px; color: #555; width: 36px; flex-shrink: 0; padding-top: 2px; }
+    #about .career-role { font-size: 15px; font-weight: 700; margin-bottom: 4px; }
+    #about .career-desc { font-size: 13px; color: #666; }
+
+    #about .about-name { font-size: 32px; font-weight: 800; margin-bottom: 16px; }
+    #about .about-bio { font-size: 16px; color: #888; line-height: 1.8; margin-bottom: 32px; }
+
+    /* 스킬 레벨 바 */
+    #about .skills-title { font-size: 12px; letter-spacing: 0.15em; color: #555; margin-bottom: 20px; }
+    #about .skill-bars { display: flex; flex-direction: column; gap: 16px; margin-bottom: 32px; }
+    #about .skill-row { display: flex; flex-direction: column; gap: 8px; }
+    #about .skill-meta { display: flex; justify-content: space-between; font-size: 13px; }
+    #about .skill-name { color: #ccc; }
+    #about .skill-pct { color: #555; }
+    #about .skill-track { height: 3px; background: #1e1e1e; border-radius: 2px; }
+    #about .skill-fill { height: 100%; background: #fff; border-radius: 2px; }
+
+    #about .about-tags { display: flex; flex-wrap: wrap; gap: 8px; margin-bottom: 32px; }
+    #about .skill-tag { padding: 5px 14px; border-radius: 4px; background: #1a1a1a; font-size: 13px; color: #888; }
+    #about .about-certs { font-size: 13px; color: #555; }
+
+    /* ── testimonials ── */
+    #testimonials {
+      padding: 100px 48px;
+      border-bottom: 1px solid #1a1a1a;
+      background: #080808;
+    }
+    #testimonials .testimonials-title { font-size: 13px; letter-spacing: 0.2em; color: #555; margin-bottom: 48px; }
+    #testimonials .testimonials-track { display: flex; gap: 2px; }
+    #testimonials .testimonial-card { flex: 1; padding: 40px; background: #0f0f0f; }
+    #testimonials .testimonial-quote { font-size: 16px; line-height: 1.7; color: #ccc; margin-bottom: 24px; }
+    #testimonials .testimonial-author { font-size: 13px; color: #555; }
+
+    /* ── contact ── */
+    #contact { padding: 120px 48px; }
+    #contact .contact-headline { font-size: clamp(28px, 4vw, 56px); font-weight: 800; margin-bottom: 16px; }
+    #contact .contact-sub { font-size: 16px; color: #666; margin-bottom: 64px; }
+    #contact .contact-layout { display: grid; grid-template-columns: 1fr 1fr; gap: 80px; }
+    #contact .contact-links { display: flex; flex-direction: column; gap: 24px; }
+    #contact .contact-link { font-size: 18px; color: #888; padding-bottom: 24px; border-bottom: 1px solid #1a1a1a; }
+    #contact .contact-form { display: flex; flex-direction: column; gap: 16px; }
+    #contact .form-field {
+      padding: 14px 18px; background: #111; border: 1px solid #222;
+      border-radius: 6px; color: #f0f0f0; font-size: 15px;
+    }
+    #contact .form-submit {
+      padding: 14px; border-radius: 6px;
+      background: #fff; color: #0a0a0a; font-weight: 700; font-size: 15px; cursor: pointer;
+    }
+
+    /* ── slideover ── */
+    #slideover-backdrop {
+      display: none; position: fixed; inset: 0; z-index: 200;
+      background: rgba(0,0,0,0.6); backdrop-filter: blur(4px);
+    }
+    #slideover {
+      position: fixed; top: 0; right: 0; bottom: 0; z-index: 201;
+      width: min(520px, 100vw);
+      background: #111; border-left: 1px solid #222;
+      transform: translateX(100%);
+      transition: transform 0.35s cubic-bezier(0.4,0,0.2,1);
+      overflow-y: auto; padding: 48px 40px;
+    }
+    #slideover.open { transform: translateX(0); }
+    #slideover-backdrop.open { display: block; }
+    #slideover .sl-close {
+      position: absolute; top: 20px; right: 20px;
+      width: 32px; height: 32px; border-radius: 6px;
+      background: #1e1e1e; border: 1px solid #2a2a2a;
+      display: flex; align-items: center; justify-content: center;
+      cursor: pointer; font-size: 16px; color: #666;
+    }
+    #slideover .sl-close:hover { color: #fff; }
+    #slideover .sl-tag { font-size: 11px; letter-spacing: 0.15em; color: #555; margin-bottom: 12px; }
+    #slideover .sl-title { font-size: 22px; font-weight: 800; line-height: 1.3; margin-bottom: 24px; }
+    #slideover .sl-thumb {
+      width: 100%; aspect-ratio: 16/9; border-radius: 6px;
+      overflow: hidden; margin-bottom: 32px; background: #1a1a1a;
+    }
+    #slideover .sl-section-label {
+      font-size: 11px; letter-spacing: 0.15em; color: #555; margin-bottom: 10px;
+    }
+    #slideover .sl-text {
+      font-size: 14px; color: #888; line-height: 1.8; margin-bottom: 28px;
+    }
+    #slideover .sl-metrics { display: flex; gap: 12px; margin-bottom: 32px; flex-wrap: wrap; }
+    #slideover .sl-metric {
+      flex: 1; min-width: 120px; padding: 16px;
+      background: #1a1a1a; border-radius: 6px; border: 1px solid #222;
+    }
+    #slideover .sl-metric-num { font-size: 24px; font-weight: 800; margin-bottom: 4px; }
+    #slideover .sl-metric-label { font-size: 12px; color: #555; }
+    #slideover .sl-chips { display: flex; flex-wrap: wrap; gap: 8px; }
+    #slideover .sl-chip {
+      padding: 5px 12px; border-radius: 4px;
+      background: #1a1a1a; font-size: 12px; color: #888; border: 1px solid #222;
+    }
+    #sticky-cta {
+      position: fixed; bottom: 0; left: 0; right: 0; z-index: 99;
+      height: 60px;
+      display: flex; align-items: center; justify-content: center; gap: 24px;
+      background: rgba(10,10,10,0.95);
+      border-top: 1px solid #1e1e1e;
+    }
+    #sticky-cta span { font-size: 14px; color: #666; }
+    #sticky-cta .sticky-btn {
+      padding: 10px 24px; border-radius: 6px;
+      background: #fff; color: #0a0a0a; font-weight: 700; font-size: 14px; cursor: pointer;
+    }
+
+    /* ── footer ── */
+    #footer {
+      padding: 32px 48px;
+      display: flex; justify-content: space-between; align-items: center;
+      border-top: 1px solid #111;
+    }
+    #footer .footer-copy { font-size: 13px; color: #444; }
+    #footer .footer-links { display: flex; gap: 24px; font-size: 13px; color: #444; }
+  </style>
+</head>
+<body>
+
+  <!-- ══════════════════════════════════
+       SLIDEOVER — 케이스 스터디 상세
+  ══════════════════════════════════ -->
+  <div id="slideover-backdrop"></div>
+  <div id="slideover">
+    <div class="sl-close" onclick="closeSlideover()">✕</div>
+    <div class="sl-tag" id="sl-tag"></div>
+    <div class="sl-title" id="sl-title"></div>
+    <div class="sl-thumb" id="sl-thumb"></div>
+    <div class="sl-section-label">OVERVIEW</div>
+    <div class="sl-text" id="sl-overview"></div>
+    <div class="sl-section-label">KEY METRICS</div>
+    <div class="sl-metrics" id="sl-metrics"></div>
+    <div class="sl-section-label">TECH STACK</div>
+    <div class="sl-chips" id="sl-chips"></div>
+  </div>
+
+  <!-- ══════════════════════════════════
+       NAV
+  ══════════════════════════════════ -->
+  <nav id="nav">
+    <span class="section-label">nav</span>
+    <div class="nav-logo">김찬희.kr</div>
+    <div class="nav-links">
+      <a href="#metrics">성과</a>
+      <a href="#services">서비스</a>
+      <a href="#portfolio">포트폴리오</a>
+      <a href="#about">소개</a>
+    </div>
+    <div class="nav-cta" onclick="document.getElementById('contact').scrollIntoView({behavior:'smooth'})" style="cursor:pointer;">연락하기</div>
+  </nav>
+
+
+  <!-- ══════════════════════════════════
+       HERO
+  ══════════════════════════════════ -->
+  <section id="hero">
+    <span class="section-label">hero</span>
+    <div class="hero-eyebrow">BACKEND ENGINEER · 3년 경력 · 시스템 설계 & 인프라 최적화</div>
+    <h1 class="hero-headline">확장성 있는 시스템과<br>데이터 효율을<br>설계하는 개발자</h1>
+    <p class="hero-sub">비즈니스 로직 최적화부터 인프라 효율 개선까지, 3년간 25개+ 기능 배포·서비스 안정성으로 증명합니다.</p>
+    <div class="hero-cta-group">
+    <button class="hero-cta-primary" onclick="document.getElementById('portfolio').scrollIntoView({behavior:'smooth'})">프로젝트 보기 →</button>
+    <button class="hero-cta-secondary">미팅 예약하기</button>
+    </div>
+    <div class="hero-logos">
+      <span>WORKED WITH</span>
+      <div class="logo-placeholder" style="display:flex;align-items:center;justify-content:center;font-size:13px;font-weight:600;color:#666;">이경환</div>
+      <div class="logo-placeholder" style="display:flex;align-items:center;justify-content:center;font-size:13px;font-weight:600;color:#666;">맹한수</div>
+      <div class="logo-placeholder" style="display:flex;align-items:center;justify-content:center;font-size:13px;font-weight:600;color:#666;">강우준</div>
+    </div>
+  </section>
+
+
+  <!-- ══════════════════════════════════
+       METRICS
+  ══════════════════════════════════ -->
+  <section id="metrics">
+    <span class="section-label">metrics</span>
+    <div class="metric-card">
+      <div class="metric-number">200%</div>
+      <div class="metric-label">API 응답 속도 향상</div>
+    </div>
+    <div class="metric-card">
+      <div class="metric-number">1천만</div>
+      <div class="metric-label">월 클라우드 비용 절감</div>
+    </div>
+    <div class="metric-card">
+      <div class="metric-number">25개+</div>
+      <div class="metric-label">MSA 기반 신규 기능 배포</div>
+    </div>
+    <div class="metric-card">
+      <div class="metric-number">4배</div>
+      <div class="metric-label">동시 접속자 확장 (2k → 8k)</div>
+    </div>
+  </section>
+
+
+  <!-- ══════════════════════════════════
+       SERVICES
+  ══════════════════════════════════ -->
+  <section id="services">
+    <span class="section-label">services</span>
+    <div class="section-title">WHAT I DO</div>
+    <div class="services-grid">
+      <div class="service-card">
+        <!-- 백엔드 개발: 코드 꺾쇠 아이콘 -->
+        <svg class="service-icon" viewBox="0 0 32 32" xmlns="http://www.w3.org/2000/svg">
+          <rect width="32" height="32" rx="6" fill="#1e1e1e"/>
+          <polyline points="11,10 5,16 11,22" fill="none" stroke="#aaa" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+          <polyline points="21,10 27,16 21,22" fill="none" stroke="#aaa" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+          <line x1="18" y1="8" x2="14" y2="24" stroke="#555" stroke-width="1.5" stroke-linecap="round"/>
+        </svg>
+        <div class="service-name">백엔드 개발</div>
+        <div class="service-desc">Java/Spring Boot 기반 RESTful API 설계 및 MSA 아키텍처 구축.</div>
+      </div>
+      <div class="service-card">
+        <!-- DB & 인프라: 실린더 아이콘 -->
+        <svg class="service-icon" viewBox="0 0 32 32" xmlns="http://www.w3.org/2000/svg">
+          <rect width="32" height="32" rx="6" fill="#1e1e1e"/>
+          <ellipse cx="16" cy="10" rx="8" ry="3" fill="none" stroke="#aaa" stroke-width="1.5"/>
+          <line x1="8" y1="10" x2="8" y2="22" stroke="#aaa" stroke-width="1.5"/>
+          <line x1="24" y1="10" x2="24" y2="22" stroke="#aaa" stroke-width="1.5"/>
+          <ellipse cx="16" cy="22" rx="8" ry="3" fill="none" stroke="#aaa" stroke-width="1.5"/>
+          <ellipse cx="16" cy="16" rx="8" ry="3" fill="none" stroke="#444" stroke-width="1" stroke-dasharray="2,2"/>
+        </svg>
+        <div class="service-name">DB & 인프라</div>
+        <div class="service-desc">MySQL 쿼리 튜닝·인덱싱, AWS(EC2·RDS·Lambda) 운영 및 비용 최적화.</div>
+      </div>
+      <div class="service-card">
+        <!-- 데이터 분석 & 모니터링: 그래프 아이콘 -->
+        <svg class="service-icon" viewBox="0 0 32 32" xmlns="http://www.w3.org/2000/svg">
+          <rect width="32" height="32" rx="6" fill="#1e1e1e"/>
+          <polyline points="5,22 11,15 16,18 22,10 27,13" fill="none" stroke="#aaa" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/>
+          <line x1="5" y1="25" x2="27" y2="25" stroke="#444" stroke-width="1.2" stroke-linecap="round"/>
+          <circle cx="11" cy="15" r="1.5" fill="#aaa"/>
+          <circle cx="16" cy="18" r="1.5" fill="#aaa"/>
+          <circle cx="22" cy="10" r="1.5" fill="#aaa"/>
+        </svg>
+        <div class="service-name">데이터 분석 & 모니터링</div>
+        <div class="service-desc">Prometheus/Grafana 모니터링 구축, ELK 스택 기반 로그 분석 및 장애 대응.</div>
+      </div>
+      <div class="service-card">
+        <!-- 기술 자문 & 코드 리뷰: 말풍선+체크 아이콘 -->
+        <svg class="service-icon" viewBox="0 0 32 32" xmlns="http://www.w3.org/2000/svg">
+          <rect width="32" height="32" rx="6" fill="#1e1e1e"/>
+          <rect x="5" y="7" width="18" height="13" rx="3" fill="none" stroke="#aaa" stroke-width="1.5"/>
+          <polyline points="10,11 13,14 18,9" fill="none" stroke="#aaa" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/>
+          <polyline points="8,20 6,25 11,22" fill="none" stroke="#555" stroke-width="1.2" stroke-linecap="round" stroke-linejoin="round"/>
+          <line x1="18" y1="21" x2="27" y2="21" stroke="#444" stroke-width="1.2" stroke-linecap="round"/>
+          <line x1="18" y1="24" x2="24" y2="24" stroke="#444" stroke-width="1.2" stroke-linecap="round"/>
+        </svg>
+        <div class="service-name">기술 자문 & 코드 리뷰</div>
+        <div class="service-desc">전사 공통 라이브러리 설계, 기술 스택 선정 자문 및 주니어 개발자 멘토링.</div>
+      </div>
+    </div>
+  </section>
+
+
+  <!-- ══════════════════════════════════
+       PORTFOLIO
+  ══════════════════════════════════ -->
+  <section id="portfolio">
+    <span class="section-label">portfolio</span>
+    <div class="portfolio-header">
+      <h2 class="portfolio-title">Selected Work</h2>
+    </div>
+    <div class="portfolio-grid">
+      <div class="case-card">
+        <div class="case-thumb">
+          <svg viewBox="0 0 480 270" xmlns="http://www.w3.org/2000/svg" width="100%" height="100%">
+            <rect width="480" height="270" fill="#111"/>
+            <!-- DB 실린더들 -->
+            <ellipse cx="120" cy="80" rx="40" ry="12" fill="#1e1e1e" stroke="#333" stroke-width="1"/>
+            <rect x="80" y="80" width="80" height="50" fill="#1e1e1e" stroke="#333" stroke-width="1"/>
+            <ellipse cx="120" cy="130" rx="40" ry="12" fill="#252525" stroke="#333" stroke-width="1"/>
+            <ellipse cx="240" cy="80" rx="40" ry="12" fill="#1e1e1e" stroke="#333" stroke-width="1"/>
+            <rect x="200" y="80" width="80" height="50" fill="#1e1e1e" stroke="#333" stroke-width="1"/>
+            <ellipse cx="240" cy="130" rx="40" ry="12" fill="#252525" stroke="#333" stroke-width="1"/>
+            <!-- Redis 아이콘 (빨간 점) -->
+            <circle cx="360" cy="100" r="28" fill="#1e1e1e" stroke="#333" stroke-width="1"/>
+            <text x="360" y="105" text-anchor="middle" font-size="11" fill="#cc4444" font-family="monospace" font-weight="bold">REDIS</text>
+            <!-- 화살표 연결 -->
+            <line x1="280" y1="105" x2="330" y2="100" stroke="#444" stroke-width="1.5" stroke-dasharray="4,3"/>
+            <polygon points="330,96 338,100 330,104" fill="#444"/>
+            <!-- 성과 텍스트 -->
+            <text x="240" y="190" text-anchor="middle" font-size="13" fill="#fff" font-family="monospace" font-weight="bold">COST ↓ ₩10M / mo</text>
+            <text x="240" y="212" text-anchor="middle" font-size="11" fill="#555" font-family="monospace">Throughput +200%</text>
+            <!-- 테두리 코너 -->
+            <polyline points="10,25 10,10 25,10" fill="none" stroke="#333" stroke-width="1.5"/>
+            <polyline points="455,25 455,10 440,10" fill="none" stroke="#333" stroke-width="1.5"/>
+            <polyline points="10,245 10,260 25,260" fill="none" stroke="#333" stroke-width="1.5"/>
+            <polyline points="455,245 455,260 440,260" fill="none" stroke="#333" stroke-width="1.5"/>
+          </svg>
+        </div>
+        <div class="case-body">
+          <div class="case-tag">E-COMMERCE · 결제 시스템 최적화</div>
+          <div class="case-title">쿼리 & 로직 최적화로 서버 비용 월 1천만 원 절감</div>
+          <div class="case-result">처리량 200% 개선 · Redis 캐싱 + Kafka 결제 로직 분리</div>
+        </div>
+      </div>
+      <div class="case-card">
+        <div class="case-thumb">
+          <svg viewBox="0 0 480 270" xmlns="http://www.w3.org/2000/svg" width="100%" height="100%">
+            <rect width="480" height="270" fill="#111"/>
+            <!-- 서버 노드들 -->
+            <rect x="30" y="105" width="60" height="60" rx="6" fill="#1e1e1e" stroke="#333" stroke-width="1"/>
+            <text x="60" y="140" text-anchor="middle" font-size="9" fill="#555" font-family="monospace">SRV 1</text>
+            <rect x="210" y="55" width="60" height="60" rx="6" fill="#252525" stroke="#444" stroke-width="1"/>
+            <text x="240" y="90" text-anchor="middle" font-size="9" fill="#666" font-family="monospace">SRV 2</text>
+            <rect x="210" y="155" width="60" height="60" rx="6" fill="#252525" stroke="#444" stroke-width="1"/>
+            <text x="240" y="190" text-anchor="middle" font-size="9" fill="#666" font-family="monospace">SRV 3</text>
+            <rect x="390" y="55" width="60" height="60" rx="6" fill="#1e1e1e" stroke="#333" stroke-width="1"/>
+            <text x="420" y="90" text-anchor="middle" font-size="9" fill="#555" font-family="monospace">SRV 4</text>
+            <rect x="390" y="155" width="60" height="60" rx="6" fill="#1e1e1e" stroke="#333" stroke-width="1"/>
+            <text x="420" y="190" text-anchor="middle" font-size="9" fill="#555" font-family="monospace">SRV 5</text>
+            <!-- 로드밸런서 -->
+            <rect x="120" y="105" width="70" height="60" rx="4" fill="#1a1a1a" stroke="#555" stroke-width="1.5"/>
+            <text x="155" y="133" text-anchor="middle" font-size="8" fill="#888" font-family="monospace">LOAD</text>
+            <text x="155" y="147" text-anchor="middle" font-size="8" fill="#888" font-family="monospace">BALANCER</text>
+            <!-- 연결선 -->
+            <line x1="90" y1="135" x2="120" y2="135" stroke="#444" stroke-width="1.5"/>
+            <line x1="190" y1="135" x2="210" y2="85" stroke="#444" stroke-width="1" stroke-dasharray="3,2"/>
+            <line x1="190" y1="135" x2="210" y2="185" stroke="#444" stroke-width="1" stroke-dasharray="3,2"/>
+            <line x1="270" y1="85" x2="390" y2="85" stroke="#333" stroke-width="1" stroke-dasharray="3,2"/>
+            <line x1="270" y1="185" x2="390" y2="185" stroke="#333" stroke-width="1" stroke-dasharray="3,2"/>
+            <!-- 성과 -->
+            <text x="240" y="245" text-anchor="middle" font-size="13" fill="#fff" font-family="monospace" font-weight="bold">2,000 → 8,000 Users  ×4</text>
+            <polyline points="10,25 10,10 25,10" fill="none" stroke="#333" stroke-width="1.5"/>
+            <polyline points="455,25 455,10 440,10" fill="none" stroke="#333" stroke-width="1.5"/>
+            <polyline points="10,245 10,260 25,260" fill="none" stroke="#333" stroke-width="1.5"/>
+            <polyline points="455,245 455,260 440,260" fill="none" stroke="#333" stroke-width="1.5"/>
+          </svg>
+        </div>
+        <div class="case-body">
+          <div class="case-tag">STARTUP · 확장성 개선</div>
+          <div class="case-title">동시 접속자 2,000 → 8,000명, 400% 확장 성공</div>
+          <div class="case-result">Auto-scaling 최적화 · HikariCP 튜닝 · 로드 밸런싱 전략 수정</div>
+        </div>
+      </div>
+      <div class="case-card">
+        <div class="case-thumb">
+          <svg viewBox="0 0 480 270" xmlns="http://www.w3.org/2000/svg" width="100%" height="100%">
+            <rect width="480" height="270" fill="#111"/>
+            <!-- 크롤러 노드들 -->
+            <circle cx="80" cy="100" r="22" fill="#1e1e1e" stroke="#333" stroke-width="1"/>
+            <text x="80" y="104" text-anchor="middle" font-size="8" fill="#555" font-family="monospace">crawler</text>
+            <circle cx="80" cy="160" r="22" fill="#1e1e1e" stroke="#333" stroke-width="1"/>
+            <text x="80" y="164" text-anchor="middle" font-size="8" fill="#555" font-family="monospace">crawler</text>
+            <circle cx="150" cy="130" r="22" fill="#252525" stroke="#444" stroke-width="1"/>
+            <text x="150" y="134" text-anchor="middle" font-size="8" fill="#666" font-family="monospace">crawler</text>
+            <!-- 화살표 -->
+            <line x1="172" y1="130" x2="210" y2="130" stroke="#444" stroke-width="1.5"/>
+            <polygon points="210,126 220,130 210,134" fill="#444"/>
+            <!-- Elasticsearch -->
+            <rect x="220" y="100" width="100" height="60" rx="8" fill="#1a1a1a" stroke="#555" stroke-width="1.5"/>
+            <text x="270" y="127" text-anchor="middle" font-size="9" fill="#888" font-family="monospace">Elastic</text>
+            <text x="270" y="142" text-anchor="middle" font-size="9" fill="#888" font-family="monospace">search</text>
+            <!-- 검색 결과 바 -->
+            <line x1="320" y1="130" x2="350" y2="130" stroke="#444" stroke-width="1.5"/>
+            <polygon points="350,126 360,130 350,134" fill="#444"/>
+            <rect x="360" y="95" width="90" height="14" rx="2" fill="#252525"/>
+            <rect x="360" y="95" width="72" height="14" rx="2" fill="#333"/>
+            <rect x="360" y="115" width="90" height="14" rx="2" fill="#252525"/>
+            <rect x="360" y="115" width="50" height="14" rx="2" fill="#2a2a2a"/>
+            <rect x="360" y="135" width="90" height="14" rx="2" fill="#252525"/>
+            <rect x="360" y="135" width="80" height="14" rx="2" fill="#333"/>
+            <rect x="360" y="155" width="90" height="14" rx="2" fill="#252525"/>
+            <rect x="360" y="155" width="38" height="14" rx="2" fill="#2a2a2a"/>
+            <!-- 성과 -->
+            <text x="240" y="210" text-anchor="middle" font-size="13" fill="#fff" font-family="monospace" font-weight="bold">500 → 3,000 docs/day  ×6</text>
+            <text x="240" y="232" text-anchor="middle" font-size="10" fill="#555" font-family="monospace">Full-text Search Optimized</text>
+            <polyline points="10,25 10,10 25,10" fill="none" stroke="#333" stroke-width="1.5"/>
+            <polyline points="455,25 455,10 440,10" fill="none" stroke="#333" stroke-width="1.5"/>
+            <polyline points="10,245 10,260 25,260" fill="none" stroke="#333" stroke-width="1.5"/>
+            <polyline points="455,245 455,260 440,260" fill="none" stroke="#333" stroke-width="1.5"/>
+          </svg>
+        </div>
+        <div class="case-body">
+          <div class="case-tag">LOCAL BRAND · 검색 엔진 구축</div>
+          <div class="case-title">일일 데이터 수집량 500 → 3,000건, 600% 증대</div>
+          <div class="case-result">분산 크롤러 구축 · Elasticsearch 전문 검색 속도 최적화</div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+
+  <!-- ══════════════════════════════════
+       ABOUT
+  ══════════════════════════════════ -->
+  <section id="about">
+    <span class="section-label">about</span>
+
+    <!-- 좌: 사진 + 커리어 타임라인 -->
+    <div class="about-left">
+      <!-- 프로필 사진 자리 -->
+    <div class="about-photo">
+      <svg viewBox="0 0 200 267" xmlns="http://www.w3.org/2000/svg" width="100%" height="100%">
+        <rect width="200" height="267" fill="#1a1a1a"/>
+        <!-- 배경 그리드 -->
+        <line x1="0" y1="60" x2="200" y2="60" stroke="#222" stroke-width="1"/>
+        <line x1="0" y1="120" x2="200" y2="120" stroke="#222" stroke-width="1"/>
+        <line x1="0" y1="180" x2="200" y2="180" stroke="#222" stroke-width="1"/>
+        <line x1="0" y1="240" x2="200" y2="240" stroke="#222" stroke-width="1"/>
+        <line x1="50" y1="0" x2="50" y2="267" stroke="#222" stroke-width="1"/>
+        <line x1="100" y1="0" x2="100" y2="267" stroke="#222" stroke-width="1"/>
+        <line x1="150" y1="0" x2="150" y2="267" stroke="#222" stroke-width="1"/>
+        <!-- 인물 실루엣 -->
+        <circle cx="100" cy="90" r="36" fill="#2e2e2e"/>
+        <ellipse cx="100" cy="210" rx="58" ry="48" fill="#2e2e2e"/>
+        <!-- 장식 점 -->
+        <circle cx="30" cy="30" r="2" fill="#444"/>
+        <circle cx="170" cy="30" r="2" fill="#444"/>
+        <circle cx="30" cy="240" r="2" fill="#444"/>
+        <circle cx="170" cy="240" r="2" fill="#444"/>
+        <text x="100" y="260" text-anchor="middle" font-size="9" fill="#444" font-family="monospace">PHOTO</text>
+      </svg>
+    </div>
+      <div>
+        <div class="career-title">CAREER TRACK</div>
+        <div class="career-track">
+          <div class="career-item">
+            <div class="career-year">2023</div>
+            <div>
+              <div class="career-role">Junior Developer</div>
+              <div class="career-desc">RESTful API 설계 및 CRUD 구현, 유닛 테스트 작성, CI/CD 파이프라인 운영 지원</div>
+            </div>
+          </div>
+          <div class="career-item">
+            <div class="career-year">2024</div>
+            <div>
+              <div class="career-role">Backend Developer</div>
+              <div class="career-desc">실시간 데이터 처리 파이프라인 구축, DB 쿼리 튜닝, MSA 전환 및 API Gateway 구축</div>
+            </div>
+          </div>
+          <div class="career-item">
+            <div class="career-year">2025</div>
+            <div>
+              <div class="career-role">Senior Backend Engineer & Technical Advisor</div>
+              <div class="career-desc">전사 공통 라이브러리 설계, 기술 스택 자문, 주니어 코드 리뷰 및 아키텍처 고도화 주도</div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- 우: 소개 + 스킬 레벨 + 툴 태그 -->
+    <div class="about-content">
+      <div class="about-name">김찬희</div>
+      <p class="about-bio">
+        3년간 주니어부터 시니어 엔지니어·기술 자문까지 직접 밟아온 백엔드 개발자입니다.
+        확장성 있는 시스템 설계와 인프라 효율 개선으로 서비스 안정성을 주도합니다.
+      </p>
+
+      <div class="skills-title">SKILL LEVEL</div>
+      <div class="skill-bars">
+        <div class="skill-row">
+          <div class="skill-meta">
+            <span class="skill-name">Backend Development (Java/Spring Boot, MSA)</span>
+            <span class="skill-pct">75%</span>
+          </div>
+          <div class="skill-track"><div class="skill-fill" style="width:75%"></div></div>
+        </div>
+        <div class="skill-row">
+          <div class="skill-meta">
+            <span class="skill-name">Database & Infra (MySQL, AWS)</span>
+            <span class="skill-pct">70%</span>
+          </div>
+          <div class="skill-track"><div class="skill-fill" style="width:70%"></div></div>
+        </div>
+        <div class="skill-row">
+          <div class="skill-meta">
+            <span class="skill-name">Data Analysis & Monitoring (Prometheus, ELK)</span>
+            <span class="skill-pct">65%</span>
+          </div>
+          <div class="skill-track"><div class="skill-fill" style="width:65%"></div></div>
+        </div>
+      </div>
+
+      <div class="about-tags">
+        <span class="skill-tag">Java</span>
+        <span class="skill-tag">Spring Boot</span>
+        <span class="skill-tag">MySQL</span>
+        <span class="skill-tag">Redis</span>
+        <span class="skill-tag">AWS</span>
+        <span class="skill-tag">Docker</span>
+        <span class="skill-tag">Prometheus</span>
+        <span class="skill-tag">ELK</span>
+      </div>
+      <div class="about-certs">AWS Certified Developer · 정보처리기사</div>
+    </div>
+  </section>
+
+
+  <!-- ══════════════════════════════════
+       TESTIMONIALS
+  ══════════════════════════════════ -->
+  <section id="testimonials">
+    <span class="section-label">testimonials</span>
+    <div class="testimonials-title">WHAT CLIENTS SAY</div>
+    <div class="testimonials-track">
+      <div class="testimonial-card">
+        <p class="testimonial-quote">"단순 대행이 아니라 비즈니스 파트너처럼 움직여 주셨어요. 광고 구조를 바꾼 첫 달부터 전환율이 눈에 띄게 달라졌습니다."</p>
+        <div class="testimonial-author">김○○ · ○○ 브랜드 대표</div>
+      </div>
+      <div class="testimonial-card">
+        <p class="testimonial-quote">"콘텐츠 전략 방향을 잡아주신 덕분에 팀 전체가 같은 기준으로 일할 수 있게 됐습니다. 체계가 생겼어요."</p>
+        <div class="testimonial-author">이○○ · ○○ 스타트업 마케팅 팀장</div>
+      </div>
+      <div class="testimonial-card">
+        <p class="testimonial-quote">"빠르고 명확하게 커뮤니케이션해 주셔서 일하기 편했습니다. 결과물도 기대 이상이었어요."</p>
+        <div class="testimonial-author">박○○ · ○○ 에이전시 AE</div>
+      </div>
+    </div>
+  </section>
+
+
+  <!-- ══════════════════════════════════
+       CONTACT
+  ══════════════════════════════════ -->
+  <section id="contact">
+    <span class="section-label">contact</span>
+    <h2 class="contact-headline">함께 일해봐요</h2>
+    <p class="contact-sub">프로젝트 문의, 협업 제안, 가볍게 이야기도 환영합니다.</p>
+    <div class="contact-layout">
+      <div class="contact-links">
+        <div class="contact-link">📧 hello@yourname.kr</div>
+        <div class="contact-link">💼 linkedin.com/in/yourname</div>
+        <div class="contact-link">📅 캘린더 예약 (Calendly)</div>
+      </div>
+      <div class="contact-form">
+        <input class="form-field" type="text" placeholder="이름 / 회사명" />
+        <input class="form-field" type="email" placeholder="이메일" />
+        <select class="form-field">
+          <option>프로젝트 유형 선택</option>
+          <option>퍼포먼스 마케팅</option>
+          <option>콘텐츠 전략</option>
+          <option>데이터 분석</option>
+          <option>마케팅 자문</option>
+          <option>기타</option>
+        </select>
+        <textarea class="form-field" rows="4" placeholder="프로젝트 간략 소개 및 예산 범위"></textarea>
+        <button class="form-submit">문의 보내기 →</button>
+      </div>
+    </div>
+  </section>
+
+
+  <!-- ══════════════════════════════════
+       STICKY-CTA
+  ══════════════════════════════════ -->
+  <div id="sticky-cta">
+    <span class="section-label">sticky-cta</span>
+    <span>지금 프리랜서 마케터를 찾고 계신가요?</span>
+    <button class="sticky-btn">미팅 예약하기</button>
+  </div>
+
+
+  <!-- ══════════════════════════════════
+       FOOTER
+  ══════════════════════════════════ -->
+  <footer id="footer">
+    <span class="section-label">footer</span>
+    <div class="footer-copy">© 2025 홍길동. All rights reserved.</div>
+    <div class="footer-links">
+      <span>개인정보처리방침</span>
+      <span>링크드인</span>
+      <span>인스타그램</span>
+    </div>
+  </footer>
+
+  <script>
+    function openCalendly() {
+      // 실제 Calendly URL로 교체하세요: https://calendly.com/YOUR_ID
+      window.open("https://calendly.com", "_blank");
+    }
+      {
+        tag: "E-COMMERCE · 결제 시스템 최적화",
+        title: "쿼리 & 로직 최적화로 서버 비용 월 1천만 원 절감",
+        overview: "이벤트 기간 급증하는 트래픽으로 인한 DB 부하를 줄이기 위해 결제 시스템 전반의 쿼리 및 로직을 재설계했습니다. Redis 글로벌 캐싱 도입과 불필요한 Join 쿼리 제거, 비동기 메시지 큐(Kafka)를 활용한 결제 로직 분리를 통해 서버 안정성을 크게 향상시켰습니다.",
+        metrics: [
+          { num: "₩1,000만", label: "월 서버 비용 절감" },
+          { num: "+200%", label: "처리량(Throughput) 개선" },
+        ],
+        chips: ["Java", "Spring Boot", "Redis", "Kafka", "MySQL", "AWS RDS"],
+        thumbId: 0,
+      },
+      {
+        tag: "STARTUP · 확장성 개선",
+        title: "동시 접속자 2,000 → 8,000명, 400% 확장 성공",
+        overview: "유저 급증에 따른 서버 다운타임 문제를 해결하기 위해 인프라 확장성 개선 프로젝트를 진행했습니다. Auto-scaling 그룹 설정 최적화와 DB 커넥션 풀(HikariCP) 튜닝, 로드 밸런싱 전략 수정을 통해 안정적인 트래픽 처리 구조를 완성했습니다.",
+        metrics: [
+          { num: "×4", label: "동시 접속자 확장" },
+          { num: "0", label: "다운타임 발생 횟수" },
+        ],
+        chips: ["AWS EC2", "Auto Scaling", "HikariCP", "Nginx", "CloudWatch"],
+        thumbId: 1,
+      },
+      {
+        tag: "LOCAL BRAND · 검색 엔진 구축",
+        title: "일일 데이터 수집량 500 → 3,000건, 600% 증대",
+        overview: "지역 기반 상권 데이터의 수집 속도와 검색 정확도를 높이기 위해 분산 크롤러 시스템을 구축하고 Elasticsearch를 도입했습니다. 전문 검색(Full-text Search) 속도를 최적화해 사용자 검색 응답 시간을 대폭 단축했습니다.",
+        metrics: [
+          { num: "×6", label: "일일 데이터 수집량" },
+          { num: "-70%", label: "검색 응답 시간 감소" },
+        ],
+        chips: ["Python", "Scrapy", "Elasticsearch", "Docker", "AWS Lambda"],
+        thumbId: 2,
+      },
+    ];
+
+    function openSlideover(idx) {
+      const c = CASES[idx];
+      document.getElementById("sl-tag").textContent = c.tag;
+      document.getElementById("sl-title").textContent = c.title;
+      document.getElementById("sl-overview").textContent = c.overview;
+
+      // 썸네일 — 포트폴리오 카드의 SVG 복사
+      const src = document.querySelectorAll("#portfolio .case-thumb")[c.thumbId];
+      const thumb = document.getElementById("sl-thumb");
+      thumb.innerHTML = src ? src.innerHTML : "";
+
+      // 메트릭
+      document.getElementById("sl-metrics").innerHTML = c.metrics
+        .map(m => `<div class="sl-metric"><div class="sl-metric-num">${m.num}</div><div class="sl-metric-label">${m.label}</div></div>`)
+        .join("");
+
+      // 칩
+      document.getElementById("sl-chips").innerHTML = c.chips
+        .map(t => `<span class="sl-chip">${t}</span>`).join("");
+
+      document.getElementById("slideover").classList.add("open");
+      document.getElementById("slideover-backdrop").classList.add("open");
+      document.body.style.overflow = "hidden";
+    }
+
+    function closeSlideover() {
+      document.getElementById("slideover").classList.remove("open");
+      document.getElementById("slideover-backdrop").classList.remove("open");
+      document.body.style.overflow = "";
+    }
+
+    document.getElementById("slideover-backdrop").addEventListener("click", closeSlideover);
+    document.addEventListener("keydown", e => { if (e.key === "Escape") closeSlideover(); });
+
+    // 카드에 클릭 이벤트 연결
+    document.querySelectorAll("#portfolio .case-card").forEach((card, i) => {
+      card.addEventListener("click", () => openSlideover(i));
+    });
+  </script>
+</html>
