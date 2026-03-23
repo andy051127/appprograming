@@ -1,0 +1,229 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>손글씨 숫자 인식</title>
+  <style>
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body {
+      font-family: 'Segoe UI', Arial, sans-serif;
+      background: #f0f2f5;
+      display: flex;
+      justify-content: center;
+      align-items: flex-start;
+      min-height: 100vh;
+      padding: 30px 16px;
+    }
+    .card {
+      background: #fff;
+      border-radius: 16px;
+      box-shadow: 0 4px 24px rgba(0,0,0,0.10);
+      padding: 32px 28px;
+      width: 100%;
+      max-width: 420px;
+    }
+    h1 { text-align: center; font-size: 1.5rem; color: #1a1a2e; margin-bottom: 20px; }
+
+    /* 캔버스 */
+    #canvas-wrap {
+      position: relative;
+      border-radius: 12px;
+      overflow: hidden;
+      border: 2px solid #444;
+      cursor: crosshair;
+    }
+    canvas { display: block; background: #000; touch-action: none; }
+
+    /* 결과 */
+    #result {
+      text-align: center;
+      font-size: 1.6rem;
+      font-weight: 700;
+      color: #1565C0;
+      margin: 14px 0 8px;
+      min-height: 2rem;
+    }
+
+    /* 신뢰도 막대 */
+    .conf-section { margin-bottom: 16px; }
+    .conf-section h3 { font-size: 0.85rem; color: #666; margin-bottom: 8px; }
+    .bar-row {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      margin-bottom: 4px;
+    }
+    .bar-label { width: 16px; font-size: 0.85rem; font-weight: 700; text-align: right; }
+    .bar-bg {
+      flex: 1;
+      height: 10px;
+      background: #e0e0e0;
+      border-radius: 5px;
+      overflow: hidden;
+    }
+    .bar-fill {
+      height: 100%;
+      background: #1976D2;
+      border-radius: 5px;
+      width: 0%;
+      transition: width 0.25s ease;
+    }
+    .bar-pct { width: 44px; font-size: 0.78rem; color: #555; font-family: monospace; }
+
+    /* 버튼 */
+    .btn-row { display: flex; gap: 12px; margin-top: 4px; }
+    button {
+      flex: 1;
+      padding: 10px 0;
+      border: none;
+      border-radius: 8px;
+      font-size: 1rem;
+      font-weight: 600;
+      cursor: pointer;
+      transition: opacity 0.15s;
+    }
+    button:active { opacity: 0.75; }
+    #btn-predict { background: #1976D2; color: #fff; }
+    #btn-clear   { background: #e53935; color: #fff; }
+
+    .hint { text-align: center; color: #aaa; font-size: 0.78rem; margin-top: 10px; }
+  </style>
+</head>
+<body>
+<div class="card">
+  <h1>손글씨 숫자 인식</h1>
+
+  <div id="canvas-wrap">
+    <canvas id="canvas" width="380" height="380"></canvas>
+  </div>
+
+  <div id="result">숫자를 그리세요</div>
+
+  <div class="conf-section">
+    <h3>각 숫자 신뢰도</h3>
+    <div id="bars"></div>
+  </div>
+
+  <div class="btn-row">
+    <button id="btn-predict">인 식</button>
+    <button id="btn-clear">지우기</button>
+  </div>
+  <p class="hint">그림을 그린 뒤 손을 떼면 자동으로 인식합니다</p>
+</div>
+
+<script>
+  // ── 신뢰도 막대 초기화 ────────────────────────────────────────────────────
+  const barsContainer = document.getElementById("bars");
+  const fillEls = [];
+  const pctEls  = [];
+  for (let i = 0; i < 10; i++) {
+    const row = document.createElement("div");
+    row.className = "bar-row";
+    row.innerHTML = `
+      <span class="bar-label">${i}</span>
+      <div class="bar-bg"><div class="bar-fill" id="fill-${i}"></div></div>
+      <span class="bar-pct" id="pct-${i}">0.0%</span>`;
+    barsContainer.appendChild(row);
+    fillEls.push(document.getElementById(`fill-${i}`));
+    pctEls.push(document.getElementById(`pct-${i}`));
+  }
+
+  // ── 캔버스 설정 ───────────────────────────────────────────────────────────
+  const canvas  = document.getElementById("canvas");
+  const ctx     = canvas.getContext("2d");
+  const BRUSH   = 14;
+  let drawing   = false;
+  let lastX     = null;
+  let lastY     = null;
+
+  ctx.strokeStyle = "#fff";
+  ctx.fillStyle   = "#fff";
+  ctx.lineWidth   = BRUSH * 2;
+  ctx.lineCap     = "round";
+  ctx.lineJoin    = "round";
+
+  function getPos(e) {
+    const rect = canvas.getBoundingClientRect();
+    const src  = e.touches ? e.touches[0] : e;
+    return [src.clientX - rect.left, src.clientY - rect.top];
+  }
+
+  function paint(x, y) {
+    ctx.beginPath();
+    ctx.arc(x, y, BRUSH, 0, Math.PI * 2);
+    ctx.fill();
+    if (lastX !== null) {
+      ctx.beginPath();
+      ctx.moveTo(lastX, lastY);
+      ctx.lineTo(x, y);
+      ctx.stroke();
+    }
+    lastX = x; lastY = y;
+  }
+
+  function startDraw(e) {
+    e.preventDefault();
+    drawing = true;
+    lastX = null; lastY = null;
+    const [x, y] = getPos(e);
+    paint(x, y);
+  }
+  function moveDraw(e) {
+    e.preventDefault();
+    if (!drawing) return;
+    const [x, y] = getPos(e);
+    paint(x, y);
+  }
+  function endDraw(e) {
+    e.preventDefault();
+    if (!drawing) return;
+    drawing = false;
+    lastX = null; lastY = null;
+    predict();
+  }
+
+  canvas.addEventListener("mousedown",  startDraw);
+  canvas.addEventListener("mousemove",  moveDraw);
+  canvas.addEventListener("mouseup",    endDraw);
+  canvas.addEventListener("mouseleave", endDraw);
+  canvas.addEventListener("touchstart", startDraw, { passive: false });
+  canvas.addEventListener("touchmove",  moveDraw,  { passive: false });
+  canvas.addEventListener("touchend",   endDraw,   { passive: false });
+
+  // ── 예측 ─────────────────────────────────────────────────────────────────
+  const resultEl = document.getElementById("result");
+
+  async function predict() {
+    const imageData = canvas.toDataURL("image/png");
+    try {
+      const res  = await fetch("/predict", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ image: imageData }),
+      });
+      const data = await res.json();
+      if (data.error) return;
+      resultEl.textContent = `예측:  ${data.digit}   (${data.confidence}%)`;
+      data.probabilities.forEach((p, i) => {
+        fillEls[i].style.width = p + "%";
+        pctEls[i].textContent  = p.toFixed(1) + "%";
+      });
+    } catch (err) {
+      console.error(err);
+    }
+  }
+
+  // ── 버튼 ─────────────────────────────────────────────────────────────────
+  document.getElementById("btn-predict").addEventListener("click", predict);
+  document.getElementById("btn-clear").addEventListener("click", () => {
+    ctx.clearRect(0, 0, canvas.width, canvas.height);
+    resultEl.textContent = "숫자를 그리세요";
+    for (let i = 0; i < 10; i++) {
+      fillEls[i].style.width = "0%";
+      pctEls[i].textContent  = "0.0%";
+    }
+  });
+</script>
+</body>
+</html>
