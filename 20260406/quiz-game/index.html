@@ -1,0 +1,153 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>상식 퀴즈 게임</title>
+  <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+
+  <!-- ── 시작 화면 ─────────────────────────────── -->
+  <div id="screen-home" class="screen">
+    <div class="card home-card">
+      <h1 class="title">상식 퀴즈 게임</h1>
+      <p class="subtitle">지식을 테스트해보세요!</p>
+
+      <div class="section-label">난이도 선택</div>
+      <div class="difficulty-toggle" id="difficulty-toggle">
+        <button class="toggle-btn" data-difficulty="easy">초급</button>
+        <button class="toggle-btn active" data-difficulty="mixed">혼합</button>
+        <button class="toggle-btn" data-difficulty="hard">고급</button>
+      </div>
+
+      <div class="section-label">카테고리 선택</div>
+      <div class="category-grid">
+        <button class="category-btn" data-category="한국사">🏛️ 한국사</button>
+        <button class="category-btn" data-category="과학">🔬 과학</button>
+        <button class="category-btn" data-category="지리">🌍 지리</button>
+        <button class="category-btn" data-category="일반상식">💡 일반상식</button>
+      </div>
+      <button class="category-btn category-btn--full" data-category="전체">📚 전체 (40문제)</button>
+
+      <button class="btn btn-link" id="btn-leaderboard">🏆 순위 기록 보기</button>
+    </div>
+  </div>
+
+  <!-- ── 문제 화면 ─────────────────────────────── -->
+  <div id="screen-quiz" class="screen hidden">
+    <div class="card quiz-card">
+      <div class="quiz-header">
+        <span class="category-tag" id="quiz-category"></span>
+        <span class="quiz-progress" id="quiz-progress"></span>
+      </div>
+      <div class="progress-bar-wrap">
+        <div class="progress-bar" id="progress-bar"></div>
+      </div>
+      <div class="quiz-score">현재 <strong id="quiz-score">0</strong>점</div>
+
+      <div class="question-text" id="question-text"></div>
+
+      <div class="choices" id="choices"></div>
+    </div>
+  </div>
+
+  <!-- ── 피드백 오버레이 ────────────────────────── -->
+  <div id="overlay-feedback" class="hidden">
+    <div class="feedback-card">
+      <div class="feedback-header" id="feedback-header"></div>
+      <div class="feedback-choices" id="feedback-choices"></div>
+      <div class="feedback-explanation" id="feedback-explanation"></div>
+      <button class="btn btn-primary btn-next" id="btn-next">다음 문제 →</button>
+    </div>
+  </div>
+
+  <!-- ── 결과 화면 ─────────────────────────────── -->
+  <div id="screen-result" class="screen hidden">
+    <div class="card result-card">
+      <h2 class="result-title">퀴즈 완료! 🎉</h2>
+
+      <div class="result-score-wrap">
+        <span class="result-score" id="result-score">0</span>
+        <span class="result-max" id="result-max"></span>
+      </div>
+      <div class="result-accuracy" id="result-accuracy"></div>
+
+      <div class="achievement-section hidden" id="achievement-section">
+        <div class="section-label">카테고리별 성취도</div>
+        <div id="achievement-bars"></div>
+      </div>
+
+      <div class="nickname-section">
+        <div class="section-label">순위에 등록하기</div>
+        <input
+          type="text"
+          id="nickname-input"
+          class="nickname-input"
+          placeholder="닉네임 입력 (최대 10자)"
+          maxlength="10"
+        >
+        <div class="nickname-error hidden" id="nickname-error">영문, 한글, 숫자만 사용 가능합니다</div>
+        <button class="btn btn-primary" id="btn-save-score" disabled>순위에 저장하기</button>
+      </div>
+
+      <div class="result-actions">
+        <button class="btn btn-secondary" id="btn-restart">다시 하기</button>
+        <button class="btn btn-secondary" id="btn-change-category">카테고리 변경</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- ── 순위 기록 화면 ─────────────────────────── -->
+  <div id="screen-leaderboard" class="screen hidden">
+    <div class="card leaderboard-card">
+      <h2 class="leaderboard-title">🏆 순위 기록</h2>
+
+      <div class="leaderboard-tabs" id="leaderboard-tabs">
+        <button class="tab-btn active" data-tab="전체">전체</button>
+        <button class="tab-btn" data-tab="한국사">한국사</button>
+        <button class="tab-btn" data-tab="과학">과학</button>
+        <button class="tab-btn" data-tab="지리">지리</button>
+        <button class="tab-btn" data-tab="일반상식">일반상식</button>
+      </div>
+
+      <div class="leaderboard-table-wrap">
+        <table class="leaderboard-table">
+          <thead>
+            <tr>
+              <th>#</th>
+              <th>닉네임</th>
+              <th>점수</th>
+              <th>정답률</th>
+              <th>날짜</th>
+            </tr>
+          </thead>
+          <tbody id="leaderboard-body"></tbody>
+        </table>
+        <div class="leaderboard-empty hidden" id="leaderboard-empty">아직 기록이 없습니다.</div>
+      </div>
+
+      <button class="btn btn-secondary" id="btn-home">홈으로</button>
+    </div>
+  </div>
+
+  <!-- ── 토스트 알림 ─────────────────────────────── -->
+  <div id="toast" class="toast hidden"></div>
+
+  <!-- ── 확인 모달 ─────────────────────────────── -->
+  <div id="modal-confirm" class="modal-backdrop hidden">
+    <div class="modal-card">
+      <p class="modal-message">게임을 종료하시겠습니까?<br>현재 진행 상황이 저장되지 않습니다.</p>
+      <div class="modal-actions">
+        <button class="btn btn-secondary" id="modal-cancel">계속 하기</button>
+        <button class="btn btn-primary" id="modal-confirm-btn">종료하기</button>
+      </div>
+    </div>
+  </div>
+
+  <script src="data/questions.js"></script>
+  <script src="js/game.js"></script>
+  <script src="js/quiz.js"></script>
+  <script src="js/leaderboard.js"></script>
+</body>
+</html>
