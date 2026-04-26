@@ -1,0 +1,13 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(claude mcp:*)",
+      "mcp__github-mcp-server__search_repositories",
+      "mcp__github-mcp-server__get_file_contents",
+      "mcp__github-mcp-server__list_commits",
+      "mcp__notion-mcp-server__API-post-page",
+      "mcp__notion-mcp-server__API-post-search",
+      "mcp__notion-mcp-server__API-patch-block-children"
+    ]
+  }
+}
